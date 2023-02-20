@@ -6,8 +6,10 @@ from flask_restful import Resource, reqparse
 from flask_jwt_extended import create_access_token, jwt_required, get_jwt_identity, JWTManager
 from flask_restful import Api
 
-from app import api, db
-from models import Usuario, usuario_schema
+from back import api, db
+from back.models import Usuario, task_schema, tasks_schema, Task
+
+from back.tasks import add
 
 '''
 Recurso que administra el servicio de login
@@ -63,3 +65,49 @@ class RecursoRegistro(Resource):
 
         except:
             return {'message':'Ha ocurrido un error'}, 500
+
+
+   
+'''
+Recurso que administra el servicio de tasks
+'''
+class RecursoTasks(Resource):
+    @jwt_required()
+    def get(self):
+        email = get_jwt_identity()  
+        parser = reqparse.RequestParser()
+        parser.add_argument('limit', type = int, help='El limite no puede ser convertido')
+        parser.add_argument('order')
+        args = parser.parse_args()
+        
+        if args['order'] == '0':
+            tasks = Task.query.filter_by(usuario_libro = email).order_by(db.desc(Task.id)).limit(args['limit']).all()
+        else:
+            tasks = Task.query.filter_by(usuario_libro = email).order_by(db.asc(Task.id)).limit(args['limit']).all()
+
+        
+        return tasks_schema.dump(tasks) 
+          
+    @jwt_required()
+    def post(self):
+        email = get_jwt_identity()
+        file = request.files['file']
+        archivo_split = file.filename.split(".")
+        nombre = archivo_split[0]
+        extension = archivo_split[1]
+        
+        nueva_libro = Task(
+            nombre_archivo = nombre,
+            extension_original = extension,
+            extension_conversion = request.form['convertir'],
+            data = file.read(),
+            usuario_task = email
+            )
+        db.session.add(nueva_libro)
+        db.session.commit()
+
+        for i in range(10000):
+            add.delay(i, i)
+
+        return task_schema.dump(nueva_libro)
+

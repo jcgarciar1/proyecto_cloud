@@ -1,7 +1,8 @@
-from app import api
-from views import RecursoRegistro, RecursoLogin
+from back import api
+from back.views import RecursoRegistro, RecursoLogin, RecursoTasks
 #, RecursoTarjeta, RecursoTarjetas
 
+api.add_resource(RecursoTasks, '/api/tasks')
 api.add_resource(RecursoRegistro, '/api/auth/registro')
 api.add_resource(RecursoLogin, '/api/auth/login')
 

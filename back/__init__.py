@@ -7,28 +7,35 @@ flask.helpers._endpoint_from_view_func = flask.scaffold._endpoint_from_view_func
 
 from flask_restful import Api
 from flask_jwt_extended import JWTManager
+from flask_celeryext import FlaskCeleryExt  # new
+from back.utils import make_celery  # new
 
 db = SQLAlchemy()
 ma = Marshmallow()
 jwt = JWTManager()
 api = Api()
+ext_celery = FlaskCeleryExt(create_celery_app=make_celery)  # new
 
 def create_app():
     app = Flask(__name__, instance_relative_config=True)
     try:
-        app.config.from_pyfile(r'/Users/juangarcia/Downloads/celery tutorial/instance/config.py')
+        app.config.from_pyfile('config.py')
     except:
         pass
 
     db.init_app(app)
     ma.init_app(app)
     jwt.init_app(app)
+    ext_celery.init_app(app)  # new
 
-    import models
+
+
+    import back.models
     with app.app_context():
         db.create_all()
-    import views
-    import routes
+
+    import back.views
+    import back.routes
     api.init_app(app)
 
     return app
