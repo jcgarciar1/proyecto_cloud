@@ -5,17 +5,26 @@ import tarfile
 import gzip
 import bz2
 import io
-
+import zipfile
+import os
 
 @shared_task
 def convert_zip(name,correo):
         original = OriginalFile.query.get_or_404(name)
         file = original.data
         without_extension = original.nombre_archivo.split(".")[0]
-        with open(f"/Users/juangarcia/Downloads/proyecto_cloud/back/temp/{without_extension}.zip", 'wb') as zipFile:
-                zipFile.write(file)
-        zipFile.close()
-        with open(f"/Users/juangarcia/Downloads/proyecto_cloud/back/temp/{without_extension}.zip", 'rb') as zipFile:
+        original_path = f"back/temp/{original.nombre_archivo}"
+        converted_path = f"back/temp/{without_extension}.zip"
+
+        with open(original_path, 'wb') as archivo_original:
+                archivo_original.write(file)
+        archivo_original.close()
+
+        with zipfile.ZipFile(converted_path, mode="w") as archive:
+                archive.write(original_path)
+        archive.close()
+
+        with open(converted_path, 'rb') as zipFile:
                 convertido = ConvertedFile(
                         nombre_archivo = without_extension + ".zip",
                         data = zipFile.read(),
@@ -28,17 +37,26 @@ def convert_zip(name,correo):
         original.status = "Processed"
         db.session.commit()
 
+        os.remove(original_path)
+        os.remove(converted_path)
+
 @shared_task
 def convert_targz(name,correo):
         original = OriginalFile.query.get_or_404(name)
         file = original.data
         without_extension = original.nombre_archivo.split(".")[0]
+        original_path = f"back/temp/{original.nombre_archivo}"
+        converted_path = f"back/temp/{without_extension}.tar.gz"
 
-        with tarfile.open(f"/Users/juangarcia/Downloads/proyecto_cloud/back/temp/{without_extension}.tar.gz", mode='w:gz') as tar:
-                tarinfo = tarfile.TarInfo(name)
-                tar.addfile(tarinfo, file)
+        with open(original_path, 'wb') as archivo_original:
+                archivo_original.write(file)
+        archivo_original.close()
+
+        tar = tarfile.open(converted_path, 'w:gz')
+        tar.add(original_path)
         tar.close()
-        with open(f"/Users/juangarcia/Downloads/proyecto_cloud/back/temp/{without_extension}.tar.gz", 'rb') as tar:
+
+        with open(converted_path, 'rb') as tar:
                 convertido = ConvertedFile(
                         nombre_archivo = without_extension + ".tar.gz",
                         data = tar.read(),
@@ -50,18 +68,26 @@ def convert_targz(name,correo):
         db.session.commit()
         original.status = "Processed"
         db.session.commit()
+        os.remove(original_path)
+        os.remove(converted_path)
 
 @shared_task
 def convert_tarbz(name,correo):
         original = OriginalFile.query.get_or_404(name)
         file = original.data
         without_extension = original.nombre_archivo.split(".")[0]
+        original_path = f"back/temp/{original.nombre_archivo}"
+        converted_path = f"back/temp/{without_extension}.tar.bz2"
 
-        with tarfile.open(f"/Users/juangarcia/Downloads/proyecto_cloud/back/temp/{without_extension}.tar.bz2", mode='w:bz2') as tar:
-                tarinfo = tarfile.TarInfo(name)
-                tar.addfile(tarinfo, file)
+        with open(original_path, 'wb') as archivo_original:
+                archivo_original.write(file)
+        archivo_original.close()
+
+        tar = tarfile.open(converted_path, 'w:bz2')
+        tar.add(original_path)
         tar.close()
-        with open(f"/Users/juangarcia/Downloads/proyecto_cloud/back/temp/{without_extension}.tar.bz2", 'rb') as tar:
+
+        with open(converted_path, 'rb') as tar:
                 convertido = ConvertedFile(
                         nombre_archivo = without_extension + ".tar.bz2",
                         data = tar.read(),
@@ -73,3 +99,5 @@ def convert_tarbz(name,correo):
         db.session.commit()
         original.status = "Processed"
         db.session.commit()
+        os.remove(original_path)
+        os.remove(converted_path)

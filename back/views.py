@@ -1,16 +1,16 @@
 import os
 from datetime import timedelta
-from flask import request, current_app, send_from_directory
+from flask import request, current_app, send_from_directory, send_file
 from werkzeug.utils import secure_filename
 from flask_restful import Resource, reqparse
 from flask_jwt_extended import create_access_token, jwt_required, get_jwt_identity, JWTManager
 from flask_restful import Api
 
 from back import api, db
-from back.models import Usuario, OriginalFile, original_schema, ConvertedFile, originals_schema
+from back.models import Usuario, OriginalFile, original_schema, ConvertedFile, originals_schema, converted_schema
 
 from back.tasks import convert_zip, convert_targz, convert_tarbz
-
+import io
 '''
 Recurso que administra el servicio de login
 '''
@@ -135,3 +135,22 @@ class RecursoMiTask(Resource):
         db.session.commit()        
         return '', 204
 
+
+
+'''
+Recurso que administra la descarga de un task
+'''
+class RecursoDescargaTask(Resource):
+    @jwt_required()
+    def get(self, id_task):
+        email = get_jwt_identity()
+        task = OriginalFile.query.get_or_404(id_task)
+
+        if task.usuario_task != email:
+            return {'message':'No tiene acceso a esta publicación'}, 401
+        else:
+            if task.status == "Processed":
+                procesado = ConvertedFile.query.filter_by(original_file = task.id).first()
+                return send_file(io.BytesIO(procesado.data), download_name=procesado.nombre_archivo,as_attachment=True)
+            else:
+                return send_file(io.BytesIO(task.data), download_name=task.nombre_archivo,as_attachment=True)
