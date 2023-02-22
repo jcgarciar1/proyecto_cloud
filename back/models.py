@@ -27,12 +27,20 @@ class Usuario(db.Model):
         return check_password_hash(self.password, clave)
 
 
-class Task(db.Model):
+class OriginalFile(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     nombre_archivo = db.Column(db.String(200))
-    extension_original = db.Column(db.String(200))
     extension_conversion = db.Column(db.String(200))
     data = db.Column(db.LargeBinary)
+    status = db.Column(db.String(200), default = "Uploaded")
+    usuario_task = db.Column(db.String(100), db.ForeignKey('usuario.email'), nullable = False)
+
+
+class ConvertedFile(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    nombre_archivo = db.Column(db.String(200))
+    data = db.Column(db.LargeBinary)
+    original_file = db.Column(db.Integer, db.ForeignKey('original_file.id', ondelete = "CASCADE"), nullable = False)
     usuario_task = db.Column(db.String(100), db.ForeignKey('usuario.email'), nullable = False)
 
 
@@ -46,7 +54,15 @@ class UsuarioSchema(ma.Schema):
     class Meta:
         fields = ("usuario", "email", "password")
 
-class TaskSchema(ma.Schema):
+class OriginalFileSchema(ma.Schema):
+    '''
+    Representa el schema de un admin
+    '''
+    class Meta:
+        fields = ("id","nombre_archivo","extension_conversion","status")
+
+
+class ConvertedFileSchema(ma.Schema):
     '''
     Representa el schema de un admin
     '''
@@ -56,5 +72,9 @@ class TaskSchema(ma.Schema):
 
 
 usuario_schema = UsuarioSchema()
-task_schema = UsuarioSchema()
-tasks_schema = UsuarioSchema(many = True)
+
+original_schema = OriginalFileSchema()
+originals_schema = OriginalFileSchema(many = True)
+
+converted_schema = ConvertedFileSchema()
+converteds_schema = ConvertedFileSchema(many = True)

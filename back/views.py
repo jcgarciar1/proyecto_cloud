@@ -7,9 +7,9 @@ from flask_jwt_extended import create_access_token, jwt_required, get_jwt_identi
 from flask_restful import Api
 
 from back import api, db
-from back.models import Usuario, task_schema, tasks_schema, Task
+from back.models import Usuario, OriginalFile, original_schema, ConvertedFile, originals_schema
 
-from back.tasks import add
+from back.tasks import convert_zip, convert_targz, convert_tarbz
 
 '''
 Recurso que administra el servicio de login
@@ -75,39 +75,63 @@ class RecursoTasks(Resource):
     @jwt_required()
     def get(self):
         email = get_jwt_identity()  
-        parser = reqparse.RequestParser()
-        parser.add_argument('limit', type = int, help='El limite no puede ser convertido')
-        parser.add_argument('order')
-        args = parser.parse_args()
-        
-        if args['order'] == '0':
-            tasks = Task.query.filter_by(usuario_libro = email).order_by(db.desc(Task.id)).limit(args['limit']).all()
-        else:
-            tasks = Task.query.filter_by(usuario_libro = email).order_by(db.asc(Task.id)).limit(args['limit']).all()
-
-        
-        return tasks_schema.dump(tasks) 
+        tasks = OriginalFile.query.filter_by(usuario_task = email).all()        
+        return originals_schema.dump(tasks) 
           
     @jwt_required()
     def post(self):
         email = get_jwt_identity()
         file = request.files['file']
-        archivo_split = file.filename.split(".")
-        nombre = archivo_split[0]
-        extension = archivo_split[1]
+        nombre = file.filename
+        conversion = request.form['convertir']
         
-        nueva_libro = Task(
+        nueva_libro = OriginalFile(
             nombre_archivo = nombre,
-            extension_original = extension,
-            extension_conversion = request.form['convertir'],
+            extension_conversion = conversion,
             data = file.read(),
             usuario_task = email
             )
         db.session.add(nueva_libro)
         db.session.commit()
 
-        for i in range(10000):
-            add.delay(i, i)
+        if conversion == "zip":
+            convert_zip.delay(nueva_libro.id,email)
+        elif conversion == "targz":
+            convert_targz.delay(nueva_libro.id,email)
+        elif conversion == "tarbz2":
+            convert_tarbz.delay(nueva_libro.id,email)
 
-        return task_schema.dump(nueva_libro)
+
+        return original_schema.dump(nueva_libro)
+
+  
+'''
+Recurso que administra el servicio de un task (Detail)
+'''
+class RecursoMiTask(Resource):
+    @jwt_required()
+    def get(self, id_task):
+        email = get_jwt_identity()
+        task = OriginalFile.query.get_or_404(id_task)
+
+        if task.usuario_task != email:
+            return {'message':'No tiene acceso a esta publicación'}, 401
+        else:
+            return original_schema.dump(task)
+
+
+    @jwt_required()
+    def delete(self, id_task):
+        email = get_jwt_identity()
+        libro = OriginalFile.query.get_or_404(id_task)
+        
+        if libro.usuario_task != email:
+            return {'message':'No tiene acceso a esta publicación'}, 401
+
+        if libro.status != "Processed":
+            return {'message':'El archivo no ha sido procesado'}, 400
+        
+        db.session.delete(libro)
+        db.session.commit()        
+        return '', 204
 
