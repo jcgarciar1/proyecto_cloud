@@ -33,6 +33,7 @@ class OriginalFile(db.Model):
     extension_conversion = db.Column(db.String(200))
     data = db.Column(db.LargeBinary)
     status = db.Column(db.String(200), default = "Uploaded")
+    fecha_creacion = db.Column(db.DateTime(), default = datetime.now)
     usuario_task = db.Column(db.String(100), db.ForeignKey('usuario.email'), nullable = False)
 
 
@@ -40,6 +41,7 @@ class ConvertedFile(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     nombre_archivo = db.Column(db.String(200))
     data = db.Column(db.LargeBinary)
+    fecha_creacion = db.Column(db.DateTime(), default = datetime.now)
     original_file = db.Column(db.Integer, db.ForeignKey('original_file.id', ondelete = "CASCADE"), nullable = False)
     usuario_task = db.Column(db.String(100), db.ForeignKey('usuario.email'), nullable = False)
 

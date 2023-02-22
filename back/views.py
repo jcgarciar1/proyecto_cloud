@@ -46,9 +46,15 @@ class RecursoRegistro(Resource):
         if request.json['email'] == '' or request.json['password'] == '' or request.json['usuario'] == '':
             return {'message': 'Campos invalidos'}, 400
         
+        passwd1 = request.json['password1']
+        passwd2 = request.json['password2']
+
+        if passwd1 != passwd2:
+            return {'message': 'Las contraseñas no coinciden'}, 400
+
         nuevo_usuario = Usuario(
             email = request.json['email'],
-            password = request.json['password'],
+            password = passwd1,
             usuario = request.json['usuario'],
         )
         
@@ -74,35 +80,46 @@ Recurso que administra el servicio de tasks
 class RecursoTasks(Resource):
     @jwt_required()
     def get(self):
-        email = get_jwt_identity()  
-        tasks = OriginalFile.query.filter_by(usuario_task = email).all()        
+        try:
+            email = get_jwt_identity()
+            parser = reqparse.RequestParser()
+            parser.add_argument('max', type = int, help='El limite no puede ser convertido')
+            parser.add_argument('order')
+            args = parser.parse_args()
+            if args['order'] == '0':
+                tasks = OriginalFile.query.filter_by(usuario_task = email).order_by(db.desc(OriginalFile.id)).limit(args['max']).all()
+            else:
+                tasks = OriginalFile.query.filter_by(usuario_task = email).order_by(db.asc(OriginalFile.id)).limit(args['max']).all()
+        except Exception as e:
+            print(e)
+
         return originals_schema.dump(tasks) 
           
     @jwt_required()
     def post(self):
         email = get_jwt_identity()
-        file = request.files['file']
+        file = request.files['fileName']
         nombre = file.filename
-        conversion = request.form['convertir']
+        conversion = request.form['newFormat']
         
-        nueva_libro = OriginalFile(
+        nuevo_task = OriginalFile(
             nombre_archivo = nombre,
             extension_conversion = conversion,
             data = file.read(),
             usuario_task = email
             )
-        db.session.add(nueva_libro)
+        db.session.add(nuevo_task)
         db.session.commit()
 
         if conversion == "zip":
-            convert_zip.delay(nueva_libro.id,email)
+            convert_zip.delay(nuevo_task.id,email)
         elif conversion == "targz":
-            convert_targz.delay(nueva_libro.id,email)
+            convert_targz.delay(nuevo_task.id,email)
         elif conversion == "tarbz2":
-            convert_tarbz.delay(nueva_libro.id,email)
+            convert_tarbz.delay(nuevo_task.id,email)
 
 
-        return original_schema.dump(nueva_libro)
+        return original_schema.dump(nuevo_task)
 
   
 '''
@@ -123,15 +140,15 @@ class RecursoMiTask(Resource):
     @jwt_required()
     def delete(self, id_task):
         email = get_jwt_identity()
-        libro = OriginalFile.query.get_or_404(id_task)
+        task = OriginalFile.query.get_or_404(id_task)
         
-        if libro.usuario_task != email:
+        if task.usuario_task != email:
             return {'message':'No tiene acceso a esta publicación'}, 401
 
-        if libro.status != "Processed":
+        if task.status != "Processed":
             return {'message':'El archivo no ha sido procesado'}, 400
         
-        db.session.delete(libro)
+        db.session.delete(task)
         db.session.commit()        
         return '', 204
 
