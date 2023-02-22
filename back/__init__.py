@@ -7,8 +7,8 @@ flask.helpers._endpoint_from_view_func = flask.scaffold._endpoint_from_view_func
 
 from flask_restful import Api
 from flask_jwt_extended import JWTManager
-from flask_celeryext import FlaskCeleryExt  # new
-from back.utils import make_celery  # new
+from flask_celeryext import FlaskCeleryExt  
+from back.utils import make_celery  
 
 db = SQLAlchemy()
 ma = Marshmallow()
@@ -24,7 +24,7 @@ def create_app():
         app.config.from_pyfile('config.py')
     except:
         pass
-    mail.init_app(app)
+    #mail.init_app(app)
     db.init_app(app)
     ma.init_app(app)
     jwt.init_app(app)
