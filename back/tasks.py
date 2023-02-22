@@ -39,7 +39,7 @@ def convert_zip(name,correo):
         db.session.commit()
 
         msg = Message('Compresión lista!', sender =   'noreply@compresionesinc.com', recipients = [correo])
-        msg.body = f"Hola, tu archivo {original.nombre_archivo} comprimido en formato zip ya está disponible"
+        msg.body = f"Hola, tu archivo {original.nombre_archivo} ya comprimido en formato zip y está disponible para descargar"
         mail.send(msg)
 
         os.remove(original_path)
@@ -73,6 +73,12 @@ def convert_targz(name,correo):
         db.session.commit()
         original.status = "Processed"
         db.session.commit()
+
+        msg = Message('Compresión lista!', sender =   'noreply@compresionesinc.com', recipients = [correo])
+        msg.body = f"Hola, tu archivo {original.nombre_archivo} ya comprimido en formato tar.gz y está disponible para descargar"
+        mail.send(msg)
+
+
         os.remove(original_path)
         os.remove(converted_path)
 
@@ -104,5 +110,11 @@ def convert_tarbz(name,correo):
         db.session.commit()
         original.status = "Processed"
         db.session.commit()
+
+        msg = Message('Compresión lista!', sender =   'noreply@compresionesinc.com', recipients = [correo])
+        msg.body = f"Hola, tu archivo {original.nombre_archivo} ya comprimido en formato tar.bz2 y está disponible para descargar"
+        mail.send(msg)
+
+
         os.remove(original_path)
         os.remove(converted_path)

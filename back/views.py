@@ -43,7 +43,7 @@ class RecursoRegistro(Resource):
         if Usuario.query.filter_by(email=request.json['email']).first() is not None:
             return {'message': f'El correo({request.json["email"]}) ya está registrado'}, 400
         
-        if request.json['email'] == '' or request.json['password'] == '' or request.json['usuario'] == '':
+        if request.json['email'] == '' or request.json['password1'] == '' or request.json['password2'] == '' or request.json['usuario'] == '':
             return {'message': 'Campos invalidos'}, 400
         
         passwd1 = request.json['password1']

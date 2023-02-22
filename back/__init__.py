@@ -15,7 +15,7 @@ ma = Marshmallow()
 jwt = JWTManager()
 api = Api()
 mail = Mail()
-ext_celery = FlaskCeleryExt(create_celery_app=make_celery)  # new
+ext_celery = FlaskCeleryExt(create_celery_app=make_celery)
 
 def create_app():
     app = Flask(__name__, instance_relative_config=True)
@@ -24,11 +24,11 @@ def create_app():
         app.config.from_pyfile('config.py')
     except:
         pass
-    #mail.init_app(app)
+    mail.init_app(app)
     db.init_app(app)
     ma.init_app(app)
     jwt.init_app(app)
-    ext_celery.init_app(app)  # new
+    ext_celery.init_app(app) 
 
 
 

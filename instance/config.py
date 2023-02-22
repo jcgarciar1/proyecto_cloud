@@ -1,7 +1,7 @@
 import os
 
 
-OUR_HOST=os.getenv("DB_HOST", "172.30.0.2")
+OUR_HOST=os.getenv("DB_HOST", "192.168.1.9")
 OUR_DB=os.getenv("DB_DB", "libros")
 OUR_USER=os.getenv("DB_USER", "postgres")
 OUR_PORT=os.getenv("DB_PORT", "5432")
@@ -15,8 +15,8 @@ SQLALCHEMY_TRACK_MODIFICATIONS = False
 JWT_SECRET_KEY = OUR_JWTSECRET
 SECRET_KEY = OUR_SECRET
 
-CELERY_BROKER_URL = os.getenv("CELERY_BROKER_URL", "redis://localhost:6379/0")              
-CELERY_RESULT_BACKEND = os.getenv("CELERY_RESULT_BACKEND", "redis://localhost:6379/0")
+CELERY_BROKER_URL = os.getenv("CELERY_BROKER_URL", "redis://192.168.1.9:6379/0")              
+CELERY_RESULT_BACKEND = os.getenv("CELERY_RESULT_BACKEND", "redis://192.168.1.9:6379/0")
 MAIL_SERVER = os.getenv("MAIL_SERVER", "sandbox.smtp.mailtrap.io")
 MAIL_PORT = os.getenv("MAIL_PORT", 2525)
 MAIL_USERNAME =  os.getenv("MAIL_USERNAME", '158bc42e00a887')

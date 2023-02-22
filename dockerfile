@@ -1,5 +1,5 @@
 # Use an official Python runtime as the base image
-FROM python:3.9.16
+FROM python:3.11
 
 # Set the working directory in the container to /app
 WORKDIR /proyecto_cloud
@@ -9,7 +9,7 @@ COPY . .
 
 # Install the dependencies
 RUN pip install --upgrade pip
-RUN pip install -e .
+RUN pip install -r requirements.txt
 
 # Set environment variables
 ENV FLASK_APP="back"

@@ -1,5 +1,11 @@
 version: "3.8"
 services: 
+  redis-broker:
+    image: redis
+    container_name: redis-broker
+    restart: always
+    ports:
+      - '6379:6379'
   libros-api:
     build: .
     container_name: libros_api_app
@@ -8,7 +14,8 @@ services:
     ports:
      - "5000:5000"
     depends_on: 
-      - db
+      db:
+        condition: service_healthy
   db: 
     container_name: libro_db_pg
     environment: 
@@ -22,6 +29,11 @@ services:
       - "5432:5432"
     volumes: 
       - ${PWD}/postgres-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
 
 networks:
     web_net:
