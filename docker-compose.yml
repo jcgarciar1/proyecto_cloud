@@ -6,13 +6,20 @@ services:
     restart: always
     ports:
       - '6379:6379'
+  celeris-worker:
+    build: 
+      context: .
+      dockerfile: dockerfile_celery
+    depends_on:
+      - redis-broker
+      - libros-api
   libros-api:
     build: .
     container_name: libros_api_app
     networks:
       - web_net
     ports:
-     - "5000:5000"
+     - "8000:8000"
     depends_on: 
       db:
         condition: service_healthy

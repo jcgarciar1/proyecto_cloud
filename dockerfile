@@ -1,8 +1,10 @@
 # Use an official Python runtime as the base image
-FROM python:3.11
+FROM ubuntu
 
 # Set the working directory in the container to /app
-WORKDIR /proyecto_cloud
+RUN apt-get update -y
+RUN apt-get install python3-pip -y
+RUN pip install gunicorn
 
 # Copy the rest of the application code to the container
 COPY . .
@@ -11,12 +13,8 @@ COPY . .
 RUN pip install --upgrade pip
 RUN pip install -r requirements.txt
 
-# Set environment variables
-ENV FLASK_APP="back"
-ENV FLASK_DEBUG=1
-
-# Expose port 5000 for the Flask development server to listen on
-EXPOSE 5000
+# Expose port 8000 for the Flask development server to listen on
+EXPOSE 8000
 
 # Define the command to run the Flask development server
-CMD ["flask", "run", "--host=0.0.0.0"]
+CMD ["gunicorn", "-b", "0.0.0.0:8000", "app:app", "--workers=5"]
