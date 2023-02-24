@@ -20,7 +20,7 @@ ext_celery = FlaskCeleryExt(create_celery_app=make_celery)
 
 def create_app():
     app = Flask(__name__, instance_relative_config=True)
-    CORS(app)
+    CORS(app,supports_credentials=True)
 
     try:
         app.config.from_pyfile('config.py')
