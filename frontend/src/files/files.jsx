@@ -7,6 +7,7 @@ function Files() {
   const [title, setTitle] = useState("Cargar Archivo");
   const [formattedFiles, setFormattedFiles] = useState([]);
   const [reload, setReload] = useState(1);
+  const [type, setType] = useState(1);
   const inputFile = useRef(null);
   const jwtToken = localStorage.getItem("token")
   let backend_url = 'http://3.90.123.49:8000'
@@ -14,13 +15,13 @@ function Files() {
 
 
   useEffect(() => {
-    if(!localStorage.getItem('token')){
+    if (!localStorage.getItem('token')) {
       return navigate("/");
     }
-    else{
-      
+    else {
+
     }
- }, [])
+  }, [])
 
   useEffect(() => {
     fetch(`${backend_url}/api/tasks`, {
@@ -66,7 +67,7 @@ function Files() {
       //Aca se envia al back el archivo que se guardo en file, usar files[0]
       var data = new FormData()
       data.append('fileName', files[0])
-      data.append('newFormat', 'zip')
+      data.append('newFormat', type)
 
       postData(`${backend_url}/api/tasks`, data)
         .then((response) => {
@@ -88,11 +89,11 @@ function Files() {
       redirect: 'follow', // manual, *follow, error
       referrerPolicy: 'no-referrer',
     })
-    .then( res => res.blob() )
-    .then( blob => {
-      var file = window.URL.createObjectURL(blob);
-      window.location.assign(file);
-    })
+      .then(res => res.blob())
+      .then(blob => {
+        var file = window.URL.createObjectURL(blob);
+        window.location.assign(file);
+      })
   }
 
   const deleteFiles = (id) => {
@@ -105,7 +106,7 @@ function Files() {
       redirect: 'follow', // manual, *follow, error
       referrerPolicy: 'no-referrer',
     })
-    .then( response => response.json() )
+      .then(response => response.json())
   }
 
   const openFinder = () => {
@@ -115,6 +116,10 @@ function Files() {
   const logout = () => {
     localStorage.removeItem('token');
     return navigate("/");
+  }
+
+  const onChangeValue = (e) => {
+    setType(e.target.value);
   }
 
   return (
@@ -129,6 +134,13 @@ function Files() {
         onChange={handleFileUpload}
         type="file"
       />
+      <div onChange={onChangeValue}>
+        <h5>Select the conversion type:</h5>
+        <input type="radio" value="zip" name="gender" /> zip
+        <input type="radio" value="targz" name="gender" /> targz
+        <input type="radio" value="tarbz2" name="gender" /> tarbz2
+      </div>
+
       <div className="px-4">
         <div className="bg-dark text-light selector" onClick={openFinder}>
           <div className="py-5">{title}</div>
@@ -154,11 +166,11 @@ function Files() {
                   <td scope="row"><a href={`http://3.90.123.49:8000/api/files/${formattedFiles[index].id}`}>{formattedFiles[index].nombre_archivo}</a></td>
                   <td scope="row">{formattedFiles[index].extension_conversion}</td>
                   <td scope="row">{formattedFiles[index].status}</td>
-                  <td scope="row"><button type="button" className="btn btn-primary" 
-                  // onClick={downloadFile(formattedFiles[index].id)}
-                  onClick={() => {downloadFiles(formattedFiles[index].id)}}
+                  <td scope="row"><button type="button" className="btn btn-primary"
+                    // onClick={downloadFile(formattedFiles[index].id)}
+                    onClick={() => { downloadFiles(formattedFiles[index].id) }}
                   >Download</button></td>
-                  <td scope="row"><button type="button" className="btn btn-danger" onClick={() => {deleteFiles(formattedFiles[index].id)}}>Delete</button></td>
+                  <td scope="row"><button type="button" className="btn btn-danger" onClick={() => { deleteFiles(formattedFiles[index].id) }}>Delete</button></td>
                 </tr>
 
                 {/* <p className="py-3 text-light">
