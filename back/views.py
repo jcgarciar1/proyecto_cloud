@@ -90,8 +90,10 @@ class RecursoTasks(Resource):
                 tasks = OriginalFile.query.filter_by(usuario_task = email).order_by(db.desc(OriginalFile.id)).limit(args['max']).all()
             else:
                 tasks = OriginalFile.query.filter_by(usuario_task = email).order_by(db.asc(OriginalFile.id)).limit(args['max']).all()
+
         except Exception as e:
-            print(e)
+            tasks = OriginalFile.query.filter_by(usuario_task = email).order_by(db.desc(OriginalFile.id)).all()
+
 
         return originals_schema.dump(tasks) 
           
