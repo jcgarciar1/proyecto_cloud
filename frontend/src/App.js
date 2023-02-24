@@ -1,4 +1,4 @@
-import { useState, useId } from 'react'
+import { useState, useId, useEffect } from 'react'
 import './App.css'
 import { Link, useNavigate } from 'react-router-dom';
 import { ReactSession } from 'react-client-session';
@@ -9,7 +9,7 @@ import { ReactSession } from 'react-client-session';
 let incorrectEmail = <p>Incorrect email format. Please change it</p>
 let validEmailRegex = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/
 let emptyFieldText = <p>Empty field, please change it</p>
-let backend_url = 'http://192.168.10.17:8000/'
+let backend_url = 'http://3.90.123.49:8000'
 let spinner = (<div className="spinner-border text-primary" role="status">
   <span className="visually-hidden">Loading...</span>
 </div>)
@@ -41,9 +41,19 @@ function App() {
   const [loading, setLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState(false);
   const [showError, setShowError] = useState(false);
-
-  let navigate = useNavigate();
   ReactSession.setStoreType("localStorage");
+  let navigate = useNavigate();
+
+  useEffect(() => {
+    if(!localStorage.getItem('token')){
+      
+    }
+    else{
+      return navigate("/files");
+    }
+ }, [])
+
+
 
   const handleEmailChange = (event) => {
     // 👇 Get input value from "event"
@@ -65,15 +75,18 @@ function App() {
     if (password.length != 0 && email.length != 0 && correctEmail) {
       setEmptyField(false)
       const jsonDataLoad = {
-        "email":email,
-        "password":password
-    }
+        "email": email,
+        "password": password
+      }
       postData(`${backend_url}/api/auth/login`, jsonDataLoad)
         .then((response) => {
-          if(response.message === "Sesion iniciada"){
+          if (response.message === "Sesion iniciada") {
+            console.log(response.access_token)
+            localStorage.setItem('token', response.access_token);
             ReactSession.set("token", response.access_token);
+            return navigate("/files");
           }
-          else{
+          else {
             setShowError(true)
             setErrorMessage(response.message)
           }
@@ -96,6 +109,7 @@ function App() {
         <label htmlFor="userEmail" className="form-label">Email address:</label>
         <input type="email" className="form-control" id='userEmail' placeholder="name@example.com" onChange={handleEmailChange} />
         {(correctEmail ? null : incorrectEmail)}
+
       </div>
         <div className="mb-3">
           <label htmlFor="exampleFormControlInput1" className="form-label">Password:</label>
@@ -105,6 +119,7 @@ function App() {
         {(showError ? <p>{errorMessage}</p> : null)}
         <br></br>
         {(emptyField ? emptyFieldText : null)}
+
         <Link to="/register">Not registered? What are you waiting?</Link></div>
     </>
 

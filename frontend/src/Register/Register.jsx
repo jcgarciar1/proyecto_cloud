@@ -4,7 +4,7 @@ import { useNavigate } from "react-router-dom";
 import "../App.css";
 import "./Register.css";
 
-let backend_url = "http://192.168.10.17:8000/";
+let backend_url = "http://3.90.123.49:8000";
 let validEmailRegex = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/;
 let incorrectEmail = <p>Incorrect email format. Please change it</p>;
 let usedEmailText = <p>Email in use. Please change it</p>;
@@ -46,6 +46,15 @@ const Register = () => {
   const [usedEmail, setUsedEmail] = useState(false);
   const [emptyField, setEmptyField] = useState(false);
   const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+    if(!localStorage.getItem('token')){
+      
+    }
+    else{
+      return navigate("/files");
+    }
+ }, [])
 
   const passwdEffect = useEffect(() => {
     if (password === password2) {
