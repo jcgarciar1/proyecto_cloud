@@ -4,6 +4,7 @@ from flask_sqlalchemy import SQLAlchemy
 from flask_mail import Mail
 import flask.scaffold
 flask.helpers._endpoint_from_view_func = flask.scaffold._endpoint_from_view_func
+from flask_cors import CORS
 
 from flask_restful import Api
 from flask_jwt_extended import JWTManager
@@ -19,6 +20,7 @@ ext_celery = FlaskCeleryExt(create_celery_app=make_celery)
 
 def create_app():
     app = Flask(__name__, instance_relative_config=True)
+    CORS(app)
 
     try:
         app.config.from_pyfile('config.py')
