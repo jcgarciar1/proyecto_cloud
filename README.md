@@ -4,6 +4,7 @@ La API fue documentada haciendo uso de Postman.
 La documentación se encuentra aqui: https://documenter.getpostman.com/view/22590903/2s93CPpX9H
 
 Pruebas fueron realizadas para garantizar la calidad de la api, pueden ser encontradas en el archivo API COMPRESIONES INC.postman_collection
+Para usarlo simplemente se abre Postman y en la sección de Colections se importa el archivo. Aquí encontrará todos los endpoints con sus respectivos tests de tipo de response, response time y schema de las responses.
 
 Para correr el back, en la carpeta prroyecto_cloud correr el comando docker compose up
 
