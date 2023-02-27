@@ -1,5 +1,15 @@
 # Documentación del proyecto
 
+La API fue documentada haciendo uso de Postman. 
+La documentación se encuentra aqui: https://documenter.getpostman.com/view/22590903/2s93CPpX9H
+
+Pruebas fueron realizadas para garantizar la calidad de la api, pueden ser encontradas en el archivo API COMPRESIONES INC.postman_collection
+
+Para correr el back, en la carpeta prroyecto_cloud correr el comando docker compose up
+
+Para correr el front se debe ingresar a la carpeta front end y correr el comando docker compose -f "docker-compose.prod.yml" up
+
+
 Lo que se muestra a continuación es el ideal de la arquitectura, es decir, el estado actual del proyecto no cuenta con la arquitectura expuesta, pero sí es a donde se espera lllegar con los recursos de la clase
 
 ### Diagrama de Arquitectura
