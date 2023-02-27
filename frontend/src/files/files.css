@@ -1,3 +1,217 @@
 .selector:hover {
   cursor: pointer;
 }
+*,
+*:after,
+*:before {
+  box-sizing: border-box;
+}
+body {
+  line-height: 1.5;
+  min-height: 100vh;
+  padding: 5rem 0;
+  font-size: clamp(1rem, 2.5vw, 1.125rem);
+  min-height: 100vh;
+  width: 100%;
+  background-color: #fffbf8;
+}
+
+section {
+  width: 70%;
+  margin-left: auto;
+  margin-right: auto;
+}
+section + section {
+  margin-top: 2.5em;
+}
+h1 {
+  font-weight: 700;
+  line-height: 1.125;
+  font-size: clamp(1.5rem, 2.5vw, 2.5rem);
+}
+h2 {
+  margin-top: 0.25em;
+  color: #999;
+  font-size: clamp(1.125rem, 2.5vw, 1.25rem);
+}
+h2 + * {
+  margin-top: 1.5em;
+}
+summary {
+  position: relative;
+  cursor: pointer;
+  padding: 1em 0.5em;
+  list-style: none;
+}
+summary::-webkit-details-marker {
+  display: none;
+}
+summary:hover {
+  background-color: #fcf4ee;
+}
+summary div {
+  display: flex;
+  align-items: center;
+
+}
+summary h3 {
+  display: flex;
+  flex-direction: column;
+}
+
+summary small {
+  color: #999;
+  font-size: 0.875em;
+}
+summary strong {
+  font-weight: 700;
+}
+summary span:first-child {
+  width: 4rem;
+  height: 4rem;
+  border-radius: 10px;
+  background-color: #f3e1e1;
+  display: flex;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: center;
+  margin-right: 1.25em;
+}
+summary span:first-child svg {
+  width: 2.25rem;
+  height: 2.25rem;
+}
+summary span:last-child {
+  font-weight: 700;
+  margin-left: auto;
+}
+summary:focus {
+  outline: none;
+}
+summary .plus {
+  color: #289672;
+}
+details {
+  border-bottom: 1px solid #b5bfd9;
+}
+details[open] {
+  box-shadow: -3px 0 0 #b5bfd9;
+}
+details:first-of-type {
+  border-top: 1px solid #b5bfd9;
+}
+details > div {
+  padding: 2em 2em 0;
+  font-size: 0.875em;
+}
+dl {
+  display: flex;
+  flex-wrap: wrap;
+}
+dl dt {
+  font-weight: 700;
+  text-align: left;
+}
+dl dd {
+  text-align: left;
+}
+dl div {
+  margin-right: 4em;
+  margin-bottom: 2em;
+}
+.material-icons {
+  cursor: pointer;
+}
+.navbar-mia {
+  width: 80%;
+  margin: auto;
+  padding: 35px 0;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  max-height: 0px;
+  background-color: #fffbf8;
+
+}
+
+.logo-mia {
+  width: 50px;
+}
+
+.navbar-mia ul li {
+  list-style: none;
+  display: inline-block;
+  margin: 0 20px;
+  position: relative;
+}
+
+.navbar-mia ul li a {
+  text-decoration: none;
+  color: black;
+  font-size: 15px;
+}
+
+.navbar-mia ul li::before {
+  content: "";
+  height: 3px;
+  width: 0%;
+  background: #c47657;
+  position: absolute;
+  left: 0;
+  bottom: -12px;
+  transition: 0.4s ease-out;
+}
+
+.navbar-mia ul li:hover::before {
+  width: 100%;
+}
+
+
+.upload
+{
+  max-width: 500px;
+
+}
+
+.boton {
+  display:inline-block;
+  color:#444;
+  border:1px solid #CCC;
+  background:#DDD;
+  box-shadow: 0 0 5px -1px rgba(0,0,0,0.2);
+  cursor:pointer;
+  vertical-align:middle;
+  max-width: 150px;
+  padding: 5px;
+  text-align: center;
+}
+
+
+.boton:hover {
+  background-color:#c4c4c4 ;
+  box-shadow: 0 0 5px -1px rgba(0,0,0,0.6);
+}
+
+.block {
+  display: block;
+  text-align: center;
+
+}
+
+.center-button{
+  margin: 0 auto;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+}
+
+.radio,
+.checkbox {
+  position: absolute;
+  margin: 0 !important;
+  padding: 0 !important;
+  opacity: 0;
+  height: 0;
+  width: 0;
+  pointer-events: none;
+}

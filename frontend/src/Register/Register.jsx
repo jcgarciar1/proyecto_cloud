@@ -3,7 +3,7 @@ import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import "../App.css";
 import "./Register.css";
-
+import backgroundImage from "../img/zip-folder.png";
 let backend_url = "http://3.90.123.49:8000";
 let validEmailRegex = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/;
 let incorrectEmail = <p>Incorrect email format. Please change it</p>;
@@ -48,14 +48,17 @@ const Register = () => {
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
-    if(!localStorage.getItem('token')){
-      
-    }
-    else{
+    if (!localStorage.getItem("token")) {
+    } else {
       return navigate("/files");
     }
- }, [])
-
+  }, []);
+  const styles = {
+    backgroundImage: `url('frontend/src/img/fondo.jpg')`,
+    backgroundSize: 'cover',
+    backgroundPosition: 'center',
+    backgroundRepeat: 'no-repeat',
+  };
   const passwdEffect = useEffect(() => {
     if (password === password2) {
       setSamePsswd(false);
@@ -124,76 +127,91 @@ const Register = () => {
     setTimeout(() => {
       setLoading(false);
     }, 2000);
+    
   };
   return (
     <>
-      <div className="App">
-        <h1>Register into CompressionInc!</h1>
-      </div>
-      <div>
-        <div className="mb-3">
-          <label htmlFor="userEmail" className="form-label">
-            Email address:
-          </label>
-          <input
-            type="email"
-            className="form-control"
-            id="userEmail"
-            placeholder="name@example.com"
-            onChange={handleEmailChange}
-          />
-          {correctEmail ? null : incorrectEmail}
+      <div style={styles}>
+        <div className="App"></div>
+        <div className="form">
+          <h1>Registrate en CompressionInc!</h1>
+
+          <div className="mb-3">
+            <label htmlFor="userEmail" className="form-label">
+              Email:
+            </label>
+            <div className="centro">
+              <input
+                type="email"
+                className="form-control"
+                id="userEmail"
+                placeholder="name@example.com"
+                onChange={handleEmailChange}
+              />
+            </div>
+
+            {correctEmail ? null : incorrectEmail}
+          </div>
+          <div className="mb-3">
+            <label htmlFor="userPassword" className="form-label">
+              Contraseña:
+            </label>
+            <div className="centro">
+              <input
+                type="password"
+                className="form-control"
+                id="userPassword"
+                placeholder="Your Password"
+                onChange={handlePasswordChange}
+              />
+            </div>
+          </div>
+
+          <div className="mb-3">
+            <label htmlFor="userPassword" className="form-label">
+              Ingresa tu contraseña nuevamente:
+            </label>
+            <div className="centro">
+              <input
+                type="password"
+                className="form-control"
+                id="userPassword"
+                placeholder="Your Password"
+                onChange={handlePassword2Change}
+              />
+            </div>
+
+            {samePsswd ? notSamePasswordText : null}
+          </div>
+          <div className="mb-3">
+            <label htmlFor="userName" className="form-label">
+              Username:
+            </label>
+            <div className="centro">
+              <input
+                type="text"
+                className="form-control"
+                id="userName"
+                placeholder="Username"
+                onChange={handleUserNameChange}
+              />
+            </div>
+          </div>
+
+          {loading ? (
+            spinner
+          ) : (
+            <button
+              type="button"
+              className="btn btn-primary"
+              onClick={registerEvent}
+            >
+              Register
+            </button>
+          )}
+          {usedEmail ? usedEmailText : null}
+          {emptyField ? emptyFieldText : null}
         </div>
-        <div className="mb-3">
-          <label htmlFor="userPassword" className="form-label">
-            Password:
-          </label>
-          <input
-            type="password"
-            className="form-control"
-            id="userPassword"
-            placeholder="Your Password"
-            onChange={handlePasswordChange}
-          />
-        </div>
-        <div className="mb-3">
-          <label htmlFor="userPassword" className="form-label">
-            Insert the password again:
-          </label>
-          <input
-            type="password"
-            className="form-control"
-            id="userPassword"
-            placeholder="Your Password"
-            onChange={handlePassword2Change}
-          />
-          {samePsswd ? notSamePasswordText : null}
-        </div>
-        <div className="mb-3">
-          <label htmlFor="userName" className="form-label">
-            Username:
-          </label>
-          <input
-            type="text"
-            className="form-control"
-            id="userName"
-            placeholder="Username"
-            onChange={handleUserNameChange}
-          />
-        </div>
-        {loading ? (
-          spinner
-        ) : (
-          <button
-            type="button"
-            className="btn btn-primary"
-            onClick={registerEvent}
-          >
-            Register
-          </button>
-        )}
-        {usedEmail ? usedEmailText : null}
-        {emptyField ? emptyFieldText : null}
       </div>
     </>
   );
