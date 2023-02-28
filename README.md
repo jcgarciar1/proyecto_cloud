@@ -1,5 +1,7 @@
 # Documentación del proyecto
 
+Aqui se encuentra el video de pruebas del back en postman: https://youtu.be/PJwXEXLL4KY
+
 La API fue documentada haciendo uso de Postman. 
 La documentación se encuentra aqui: https://documenter.getpostman.com/view/22590903/2s93CPpX9H
 
