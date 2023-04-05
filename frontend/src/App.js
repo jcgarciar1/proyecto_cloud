@@ -69,6 +69,8 @@ function App() {
   };
 
   const login = () => {
+    console.log(backend_url)
+    console.log(`${backend_url}/api/auth/login`)
     if (password.length != 0 && email.length != 0 && correctEmail) {
       setEmptyField(false);
       const jsonDataLoad = {
