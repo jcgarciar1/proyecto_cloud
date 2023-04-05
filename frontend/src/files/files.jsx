@@ -157,10 +157,10 @@ function Files() {
           <input type="radio" value="zip" name="gender" /> zip{" "}
         </label>
         <label className="block">
-          <input type="radio" value="targz" name="gender" /> targz
+          <input type="radio" value="tar.gz" name="gender" /> tar.gz
         </label>
         <label className="block">
-          <input type="radio" value="tarbz2" name="gender" /> tarbz2
+          <input type="radio" value="tar.bz2" name="gender" /> tar.bz2
         </label>
       </div>
       </div>
