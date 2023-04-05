@@ -8,7 +8,8 @@ import { ReactSession } from "react-client-session";
 let incorrectEmail = <p>Incorrect email format. Please change it</p>;
 let validEmailRegex = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/;
 let emptyFieldText = <p>Empty field, please change it</p>;
-let backend_url = "http://3.90.123.49:8000";
+//let backend_url = "http://3.90.123.49:8000";
+var backend_url   = process.env.BACKEND_URL;
 let spinner = (
   <div className="spinner-border text-primary" role="status">
     <span className="visually-hidden">Loading...</span>

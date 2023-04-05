@@ -10,7 +10,8 @@ function Files() {
   const [type, setType] = useState(1);
   const inputFile = useRef(null);
   const jwtToken = localStorage.getItem("token");
-  let backend_url = "http://3.90.123.49:8000";
+  //let backend_url = "http://3.90.123.49:8000";
+  var backend_url   = process.env.BACKEND_URL;
   let navigate = useNavigate();
 
   useEffect(() => {
