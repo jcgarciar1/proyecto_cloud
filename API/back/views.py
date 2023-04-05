@@ -5,12 +5,13 @@ from werkzeug.utils import secure_filename
 from flask_restful import Resource, reqparse
 from flask_jwt_extended import create_access_token, jwt_required, get_jwt_identity, JWTManager
 from flask_restful import Api
-
-from back import api, db
+import requests
+from back import api, db, ext_celery
 from back.models import Usuario, OriginalFile, original_schema, ConvertedFile, originals_schema, converted_schema
-
-from back.tasks import convert_zip, convert_targz, convert_tarbz
+from werkzeug.utils import secure_filename
 import io
+
+
 '''
 Recurso que administra el servicio de login
 '''
@@ -103,24 +104,41 @@ class RecursoTasks(Resource):
         file = request.files['fileName']
         nombre = file.filename
         conversion = request.form['newFormat']
-        
         nuevo_task = OriginalFile(
             nombre_archivo = nombre,
             extension_conversion = conversion,
-            data = file.read(),
             usuario_task = email
             )
+        
+        if not os.path.isdir(f"back/original_files/{email}"):
+            os.mkdir(f"back/original_files/{email}")
+            os.mkdir(f"back/processed_files/{email}")
+
+
+
+        with open(f"back/original_files/{email}/{nombre}", 'wb') as archivo_original:
+                archivo_original.write(file.read())
+        archivo_original.close()
+
+
         db.session.add(nuevo_task)
         db.session.commit()
 
         if conversion == "zip":
-            convert_zip.delay(nuevo_task.id,email)
-        elif conversion == "targz":
-            convert_targz.delay(nuevo_task.id,email)
-        elif conversion == "tarbz2":
-            convert_tarbz.delay(nuevo_task.id,email)
+            ext_celery.celery.send_task('tasks.convert_zip',(nuevo_task.id,email,nombre))
+        elif conversion == "tar.gz":
+            ext_celery.celery.send_task('tasks.convert_tar',(nuevo_task.id,email,nombre))
+        elif conversion == "tar.bz2":
+            ext_celery.celery.send_task('tasks.convert_tarbz',(nuevo_task.id,email,nombre))
 
-
+        processed_task = ConvertedFile(
+            nombre_archivo = nombre.split(".")[0] + "." + conversion,
+            original_file = nuevo_task.id,
+            usuario_task = email
+            )
+        
+        db.session.add(processed_task)
+        db.session.commit()
         return original_schema.dump(nuevo_task)
 
   
@@ -143,6 +161,8 @@ class RecursoMiTask(Resource):
     def delete(self, id_task):
         email = get_jwt_identity()
         task = OriginalFile.query.get_or_404(id_task)
+        converted = ConvertedFile.query.filter_by(original_file=task.id).first()
+
         
         if task.usuario_task != email:
             return {'message':'No tiene acceso a esta publicación'}, 401
@@ -150,8 +170,11 @@ class RecursoMiTask(Resource):
         if task.status != "Processed":
             return {'message':'El archivo no ha sido procesado'}, 400
         
+        os.remove(f"back/processed_files/{email}/{converted.nombre_archivo}")
         db.session.delete(task)
-        db.session.commit()        
+        db.session.commit()
+        os.remove(f"back/original_files/{email}/{task.nombre_archivo}")
+
         return '', 204
 
 
@@ -170,6 +193,6 @@ class RecursoDescargaTask(Resource):
         else:
             if task.status == "Processed":
                 procesado = ConvertedFile.query.filter_by(original_file = task.id).first()
-                return send_file(io.BytesIO(procesado.data), download_name=procesado.nombre_archivo,as_attachment=True)
+                return send_file(f"/back/processed_files/{email}/{procesado.nombre_archivo}", download_name=procesado.nombre_archivo,as_attachment=True)
             else:
-                return send_file(io.BytesIO(task.data), download_name=task.nombre_archivo,as_attachment=True)
+                return send_file(f"/back/original_files/{email}/{task.nombre_archivo}", download_name=task.nombre_archivo,as_attachment=True)

@@ -1,25 +1,15 @@
 version: "3.8"
 services: 
-  redis-broker:
-    image: redis
-    container_name: redis-broker
-    restart: always
-    ports:
-      - '6379:6379'
-  celeris-worker:
-    build: 
-      context: .
-      dockerfile: dockerfile_celery
-    depends_on:
-      - redis-broker
-      - libros-api
-  libros-api:
+  files-api:
     build: .
-    container_name: libros_api_app
+    container_name: files_api
     networks:
       - web_net
     ports:
      - "8000:8000"
+    volumes:
+      - /nfs/home/original_files:/back/original_files
+      - /nfs/home/processed_files:/back/processed_files
     depends_on: 
       db:
         condition: service_healthy
