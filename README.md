@@ -26,3 +26,7 @@ Se observa el diagrama de arquitectura, el cual esta basado completamente en AWS
 ![Cloud (1)](https://user-images.githubusercontent.com/33431725/221444244-88ed5e6f-60ec-43b0-9804-5705a1ebe1cd.png)
 
 Por otro lado, tenemos el diagrama de despliegue donde se observa que todo se basa en protoclos de comunicación por medio de HTTPS y TCP. Este se divide en el lado del cliente y en el lado de la nube, donde se enceuntra todo lo relacionado a los servicios que se prestan al cliente.
+
+
+### Diagrama de Despliegue en la Entrega 3 (Migracion a GCP)
+<img width="530" alt="DiagramaEntrega" src="https://user-images.githubusercontent.com/54164818/230737243-ccb3b063-2aae-4b2d-9cbe-cb0fba153809.png">
