@@ -123,6 +123,7 @@ venv.bak/
 .mypy_cache/
 .dmypy.json
 dmypy.json
+API/cloud-project-382023-9d909c0e83eb.json
 
 # Pyre type checker
 .pyre/

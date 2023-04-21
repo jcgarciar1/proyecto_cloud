@@ -1,68 +1,78 @@
-from celery import Celery
-from sqlalchemy import create_engine
-from datetime import datetime
-from sqlalchemy import create_engine, MetaData,Table, Column, Numeric, Integer, VARCHAR, update
+from google.cloud import storage,pubsub_v1
+import os
+import tempfile
 import zipfile
 import tarfile
-
-app = Celery( 'tasks' , broker = 'redis://10.128.0.5:6379/0' )
-
-engine = create_engine('postgresql+psycopg2://postgres:libros@10.128.0.3:5432/libros')
-# initialize the Metadata Object
-meta = MetaData(bind=engine)
-MetaData.reflect(meta)
-# Get the `books` table from the Metadata object
-ORIGINAL = meta.tables['original_file']
+import io
 
 
-@app.task
-def convert_zip(id,email,filename):
-    original_path = f"/compressed/{email}/{filename}"
-    without_extension = filename.split(".")[0]
-    converted_path =f"/processed_files/{email}/{without_extension}"+ ".zip"
-
-    with zipfile.ZipFile(converted_path, mode="w") as archive:
-        archive.write(original_path)
-    archive.close()
-
-    u = update(ORIGINAL)
-    u = u.values({"status": "Processed"})
-    u = u.where(ORIGINAL.c.id == id)
-    engine.execute(u)
-
-    return f"Processed {original_path}"
-
-@app.task
-def convert_tar(id,email,filename):
-    original_path = f"/compressed/{email}/{filename}"
-    without_extension = filename.split(".")[0]
-    converted_path =f"/processed_files/{email}/{without_extension}"+ ".tar.gz"
-
-    tar = tarfile.open(converted_path, 'w:gz')
-    tar.add(original_path)
-    tar.close()
-
-    u = update(ORIGINAL)
-    u = u.values({"status": "Processed"})
-    u = u.where(ORIGINAL.c.id == id)
-    engine.execute(u)
-
-    return f"Processed {original_path}"
-
-@app.task
-def convert_tarbz(id,email,filename):
-    original_path = f"/compressed/{email}/{filename}"
-    without_extension = filename.split(".")[0]
-    converted_path =f"/processed_files/{email}/{without_extension}"+ ".tar.bz2"
-
-    tar = tarfile.open(converted_path, 'w:bz2')
-    tar.add(original_path)
-    tar.close()
+client = storage.Client(project="cloud-project-382023")
+bucket = client.get_bucket("compression_app_files")
 
 
-    u = update(ORIGINAL)
-    u = u.values({"status": "Processed"})
-    u = u.where(ORIGINAL.c.id == id)
-    engine.execute(u)
+def gz(temp,filename,message,email):
+    try:
+        blob = bucket.get_blob(f'original_files/{email}/{filename}')
+        blob = blob.download_as_bytes()
 
-    return f"Processed {original_path}"
+        with open(f"/tmp/{filename}","wb") as original:
+            original.write(blob)
+        original.close()
+        with tarfile.open(fileobj = temp, mode="w:gz") as archive:
+            archive.add(f"/tmp/{filename}")
+        archive.close()
+    finally:
+        temp.seek(0)
+        stream = io.BytesIO(temp.read())
+        blob2 = bucket.blob(f"converted_files/{email}/{temp.name}")
+        blob2.upload_from_file(stream)
+        temp.close()
+
+def zip_file(temp,filename,message,email):
+    try:
+        blob = bucket.get_blob(f'original_files/{email}/{filename}')
+        blob = blob.download_as_bytes()
+        with zipfile.ZipFile(temp, mode="w") as archive:
+            archive.writestr(filename,blob)
+        archive.close()
+    finally:
+        temp.seek(0)
+        stream = io.BytesIO(temp.read())
+        blob2 = bucket.blob(f"converted_files/{email}/{temp.name}")
+        blob2.upload_from_file(stream)
+        temp.close()
+
+
+
+def tar(temp,filename,message,email):
+    try:
+        blob = bucket.get_blob(f'original_files/{email}/{filename}')
+        blob = blob.download_as_bytes()
+
+        with open(f"/tmp/{filename}","wb") as original:
+            original.write(blob)
+        original.close()
+        with tarfile.open(fileobj = temp, mode="w:bz2") as archive:
+            archive.add(f"/tmp/{filename}")
+        archive.close()
+    finally:
+        temp.seek(0)
+        stream = io.BytesIO(temp.read())
+        blob2 = bucket.blob(f"converted_files/{email}/{temp.name}")
+        blob2.upload_from_file(stream)
+        temp.close()
+
+def callback(message, context):
+    conversion = message["attributes"]["conversion"]
+    without_extension = message["attributes"]["filename"].split(".")[0]
+    temp = tempfile.NamedTemporaryFile()
+    temp.name = f"{without_extension}.{conversion}"
+    filename = message["attributes"]["filename"]
+    email = message["attributes"]["email"]
+
+    if conversion == "zip":
+        zip_file(temp,filename,message,email)
+    elif conversion == "tar.gz":
+        gz(temp,filename,message,email)
+    elif conversion == "tar.bz2":
+        tar(temp,filename,message,email)

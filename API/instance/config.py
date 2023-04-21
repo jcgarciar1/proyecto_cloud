@@ -1,17 +1,20 @@
 import os
+from dotenv import load_dotenv
+
+load_dotenv()
 
 
-OUR_HOST=os.getenv("DB_HOST", "35.222.86.243")
-OUR_DB=os.getenv("DB_DB", "libros")
-OUR_USER=os.getenv("DB_USER", "postgres")
-OUR_PORT=os.getenv("DB_PORT", "5432")
-OUR_PW=os.getenv("DB_PW", "libros")
-OUR_SECRET=os.getenv("SECRET", "libros")
-OUR_JWTSECRET=os.getenv("JWTSECRET", "libros")
-PROJECT_ID = os.getenv("CLOUD_SQL", "cloud-project-382023:us-central1:unique-id")
+OUR_HOST=os.getenv("DB_HOST")
+OUR_DB=os.getenv("DB_DB")
+OUR_USER=os.getenv("DB_USER")
+OUR_PORT=os.getenv("DB_PORT")
+OUR_PW=os.getenv("DB_PW")
+OUR_SECRET=os.getenv("SECRET")
+OUR_JWTSECRET=os.getenv("JWTSECRET")
+PROJECT_ID = os.getenv("CLOUD_SQL")
 
 DEBUG = False
-SQLALCHEMY_DATABASE_URI = 'postgresql+psycopg2://{}:{}@{}:{}/{}?unix_socket =/cloudsql/{}'.format(OUR_USER, OUR_PW, OUR_HOST, OUR_PORT, OUR_DB,PROJECT_ID)
+SQLALCHEMY_DATABASE_URI = 'postgresql+psycopg2://{}:{}@{}:{}/{}'.format(OUR_USER, OUR_PW, OUR_HOST,OUR_PORT, OUR_DB)
 SQLALCHEMY_TRACK_MODIFICATIONS = False
 JWT_SECRET_KEY = OUR_JWTSECRET
 SECRET_KEY = OUR_SECRET

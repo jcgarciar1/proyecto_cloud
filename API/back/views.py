@@ -10,6 +10,15 @@ from back import api, db, ext_celery
 from back.models import Usuario, OriginalFile, original_schema, ConvertedFile, originals_schema, converted_schema
 from werkzeug.utils import secure_filename
 import io
+from google.cloud import storage,pubsub_v1
+
+
+client = storage.Client(project="cloud-project-382023")
+bucket = client.get_bucket("compression_app_files")
+
+
+publisher = pubsub_v1.PublisherClient()
+topic_path = 'projects/cloud-project-382023/topics/compresiones'
 
 
 '''
@@ -100,6 +109,7 @@ class RecursoTasks(Resource):
           
     @jwt_required()
     def post(self):
+
         email = get_jwt_identity()
         file = request.files['fileName']
         nombre = file.filename
@@ -110,35 +120,21 @@ class RecursoTasks(Resource):
             usuario_task = email
             )
         
-        if not os.path.isdir(f"back/original_files/{email}"):
-            os.mkdir(f"back/original_files/{email}")
-            os.mkdir(f"back/processed_files/{email}")
+        stream = io.BytesIO(file.read())
+        # Create a blob object from the filepath
+        blob = bucket.blob(f"original_files/{email}/{nombre}")
+        blob.upload_from_file(stream)
 
+        data = "Nuevo archivo para comprimir"
+        data = data.encode("utf-8")
 
+        future = publisher.publish(topic_path,data,email = email, filename = nombre, conversion = conversion)
+        print(future.result())
 
-        with open(f"back/original_files/{email}/{nombre}", 'wb') as archivo_original:
-                archivo_original.write(file.read())
-        archivo_original.close()
-
-
+        # Upload the file to a destination
         db.session.add(nuevo_task)
         db.session.commit()
 
-        if conversion == "zip":
-            ext_celery.celery.send_task('tasks.convert_zip',(nuevo_task.id,email,nombre))
-        elif conversion == "tar.gz":
-            ext_celery.celery.send_task('tasks.convert_tar',(nuevo_task.id,email,nombre))
-        elif conversion == "tar.bz2":
-            ext_celery.celery.send_task('tasks.convert_tarbz',(nuevo_task.id,email,nombre))
-
-        processed_task = ConvertedFile(
-            nombre_archivo = nombre.split(".")[0] + "." + conversion,
-            original_file = nuevo_task.id,
-            usuario_task = email
-            )
-        
-        db.session.add(processed_task)
-        db.session.commit()
         return original_schema.dump(nuevo_task)
 
   
