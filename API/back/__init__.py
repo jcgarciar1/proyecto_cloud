@@ -3,27 +3,26 @@ from flask_marshmallow import Marshmallow
 from flask_sqlalchemy import SQLAlchemy
 from flask_mail import Mail
 import flask.scaffold
+
 flask.helpers._endpoint_from_view_func = flask.scaffold._endpoint_from_view_func
 from flask_cors import CORS
 
 from flask_restful import Api
 from flask_jwt_extended import JWTManager
-from flask_celeryext import FlaskCeleryExt  
-from back.utils import make_celery  
 
 db = SQLAlchemy()
 ma = Marshmallow()
 jwt = JWTManager()
 api = Api()
 mail = Mail()
-ext_celery = FlaskCeleryExt(create_celery_app=make_celery)
+
 
 def create_app():
     app = Flask(__name__, instance_relative_config=True)
-    CORS(app,supports_credentials=True)
+    CORS(app, supports_credentials=True)
 
     try:
-        app.config.from_pyfile('config.py')
+        app.config.from_pyfile("config.py")
     except:
         pass
     mail.init_app(app)
@@ -31,17 +30,18 @@ def create_app():
     ma.init_app(app)
     jwt.init_app(app)
 
-
-
     import back.models
+
     with app.app_context():
         db.create_all()
 
     import back.views
     import back.routes
+
     api.init_app(app)
 
     return app
+
 
 def _endpoint_from_view_func(view_func):
     """Internal helper that returns the default endpoint for a given

@@ -13,6 +13,7 @@ sudo apt install python3-pip -y
 sudo pip install gunicorn
 git clone https://github.com/jcgarciar1/proyecto_cloud.git
 cd proyecto_cloud/API
+git checkout entrega-4
 pip install --upgrade pip
 pip install -r requirements.txt
 gunicorn -b  0.0.0.0:8000 app:app --workers=1
