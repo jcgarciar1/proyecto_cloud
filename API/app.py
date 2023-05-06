@@ -1,5 +1,4 @@
-from back import create_app, ext_celery
+from back import create_app
 
 app = create_app()
-celery = ext_celery.celery
 app.app_context().push()
