@@ -1,6 +1,7 @@
 # Use an official Python runtime as the base image
 FROM ubuntu
 
+
 # Set the working directory in the container to /app
 RUN apt-get update -y
 RUN apt-get install python3-pip -y
@@ -8,6 +9,16 @@ RUN pip install gunicorn
 
 # Copy the rest of the application code to the container
 COPY . .
+
+# Set ENV variables
+ENV DB_HOST='34.121.176.97'
+ENV DB_DB='files'
+ENV DB_USER='cloud'
+ENV DB_PORT='5432'
+ENV DB_PW='cs(z3bT)<H{<9)bE'
+ENV SECRET="GT1]t8h?'dSHVJSM"
+ENV JWTSECRET="GT1]t8h?'dSHVJSM"
+ENV CLOUD_SQL='cloud-project-382023'
 
 # Install the dependencies
 RUN pip install --upgrade pip
