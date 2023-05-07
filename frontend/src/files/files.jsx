@@ -10,7 +10,7 @@ function Files() {
   const [type, setType] = useState(1);
   const inputFile = useRef(null);
   const jwtToken = localStorage.getItem("token");
-  let backend_url = "http://34.136.54.17:8000";
+  let backend_url = "http://34.160.47.154";
   //var backend_url   = process.env.BACKEND_URL;
   let navigate = useNavigate();
 
@@ -122,7 +122,6 @@ function Files() {
   return (
     <div className="container-fluid ">
       <div className="App">
-
         <div className="sombra">
           <div>
             <div className="navbar-mia">
@@ -153,16 +152,16 @@ function Files() {
       <div onChange={onChangeValue}>
         <h5>Selecciona el tipo de compresión que deseas:</h5>
         <div className="center-button">
-        <label className="block">
-          <input type="radio" value="zip" name="gender" /> zip{" "}
-        </label>
-        <label className="block">
-          <input type="radio" value="tar.gz" name="gender" /> tar.gz
-        </label>
-        <label className="block">
-          <input type="radio" value="tar.bz2" name="gender" /> tar.bz2
-        </label>
-      </div>
+          <label className="block">
+            <input type="radio" value="zip" name="gender" /> zip{" "}
+          </label>
+          <label className="block">
+            <input type="radio" value="tar.gz" name="gender" /> tar.gz
+          </label>
+          <label className="block">
+            <input type="radio" value="tar.bz2" name="gender" /> tar.bz2
+          </label>
+        </div>
       </div>
       <br />
       <div className="boton" onClick={openFinder}>
@@ -170,7 +169,12 @@ function Files() {
       </div>
       <br />
       <br />
-      <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-gH2yIJqKdNHPEq0n4Mqa/HGKIhSkIHeL5AyhkYV8i59U5AR6csBvApHHNl/vI1Bx" crossorigin="anonymous"/>
+      <link
+        href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/css/bootstrap.min.css"
+        rel="stylesheet"
+        integrity="sha384-gH2yIJqKdNHPEq0n4Mqa/HGKIhSkIHeL5AyhkYV8i59U5AR6csBvApHHNl/vI1Bx"
+        crossorigin="anonymous"
+      />
 
       <i class="bi bi-trash"></i>
 

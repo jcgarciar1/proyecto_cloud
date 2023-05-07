@@ -4,7 +4,7 @@ import { useNavigate } from "react-router-dom";
 import "../App.css";
 import "./Register.css";
 import backgroundImage from "../img/zip-folder.png";
-let backend_url = "http://34.136.54.17:8000";
+let backend_url = "http://34.160.47.154";
 //var backend_url   = process.env.BACKEND_URL;
 let validEmailRegex = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/;
 let incorrectEmail = <p>Incorrect email format. Please change it</p>;
@@ -56,9 +56,9 @@ const Register = () => {
   }, []);
   const styles = {
     backgroundImage: `url('frontend/src/img/fondo.jpg')`,
-    backgroundSize: 'cover',
-    backgroundPosition: 'center',
-    backgroundRepeat: 'no-repeat',
+    backgroundSize: "cover",
+    backgroundPosition: "center",
+    backgroundRepeat: "no-repeat",
   };
   const passwdEffect = useEffect(() => {
     if (password === password2) {
@@ -128,7 +128,6 @@ const Register = () => {
     setTimeout(() => {
       setLoading(false);
     }, 2000);
-    
   };
   return (
     <>

@@ -8,7 +8,7 @@ import { ReactSession } from "react-client-session";
 let incorrectEmail = <p>Incorrect email format. Please change it</p>;
 let validEmailRegex = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/;
 let emptyFieldText = <p>Empty field, please change it</p>;
-let backend_url = "http://34.136.54.17:8000";
+let backend_url = "http://34.160.47.154";
 //var backend_url   = process.env.BACKEND_URL;
 let spinner = (
   <div className="spinner-border text-primary" role="status">
@@ -69,8 +69,8 @@ function App() {
   };
 
   const login = () => {
-    console.log(backend_url)
-    console.log(`${backend_url}/api/auth/login`)
+    console.log(backend_url);
+    console.log(`${backend_url}/api/auth/login`);
     if (password.length != 0 && email.length != 0 && correctEmail) {
       setEmptyField(false);
       const jsonDataLoad = {
