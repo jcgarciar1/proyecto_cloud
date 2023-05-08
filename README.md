@@ -40,6 +40,8 @@ https://youtu.be/TADWZhQhIZM
 
 ### Diagrama de Arquitectura
 
+![image](https://user-images.githubusercontent.com/54164818/236731661-2d2c9575-0238-4a1d-b6aa-42e996ae3e47.png)
+
 ### Pruebas de carga de la aplicación
 
 **Escenario 1:**
