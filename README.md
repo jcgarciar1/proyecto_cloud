@@ -1,4 +1,6 @@
+
 # Documentación del proyecto
+# Entrega 1
 
 Aqui se encuentra el video de pruebas del back en postman: https://youtu.be/PJwXEXLL4KY
 
@@ -28,5 +30,9 @@ Se observa el diagrama de arquitectura, el cual esta basado completamente en AWS
 Por otro lado, tenemos el diagrama de despliegue donde se observa que todo se basa en protoclos de comunicación por medio de HTTPS y TCP. Este se divide en el lado del cliente y en el lado de la nube, donde se enceuntra todo lo relacionado a los servicios que se prestan al cliente.
 
 
-### Diagrama de Despliegue en la Entrega 3 (Migracion a GCP)
+# Entrega 3 (Migracion a GCP)
 <img width="530" alt="DiagramaEntrega" src="https://user-images.githubusercontent.com/54164818/230737243-ccb3b063-2aae-4b2d-9cbe-cb0fba153809.png">
+
+# Entrega 4
+
+Video sustentación: https://youtu.be/TADWZhQhIZM
