@@ -35,9 +35,12 @@ Por otro lado, tenemos el diagrama de despliegue donde se observa que todo se ba
 
 # Entrega 4
 
-Video sustentación: https://youtu.be/TADWZhQhIZM
+### Video sustentación: 
+https://youtu.be/TADWZhQhIZM
 
-**Pruebas de carga de la aplicación**
+### Diagrama de Arquitectura
+
+### Pruebas de carga de la aplicación
 
 **Escenario 1:**
 
