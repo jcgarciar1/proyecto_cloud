@@ -23,6 +23,7 @@ from back.models import (
 from werkzeug.utils import secure_filename
 import io
 from google.cloud import storage, pubsub_v1
+from flask import after_this_request
 
 
 client = storage.Client(project="cloud-project-382023")
@@ -165,15 +166,15 @@ class RecursoTasks(Resource):
 
         data = "Nuevo archivo para comprimir"
         data = data.encode("utf-8")
-
-        future = publisher.publish(
-            topic_path, data, email=email, filename=nombre, conversion=conversion
-        )
-        print(future.result())
+        
 
         # Upload the file to a destination
         db.session.add(nuevo_task)
         db.session.commit()
+        print(nuevo_task.id)
+        future = publisher.publish(
+            topic_path, data, email=email, filename=nombre, conversion=conversion, id = str(nuevo_task.id)
+        )
 
         return original_schema.dump(nuevo_task)
 
@@ -198,18 +199,23 @@ class RecursoMiTask(Resource):
     def delete(self, id_task):
         email = get_jwt_identity()
         task = OriginalFile.query.get_or_404(id_task)
-        converted = ConvertedFile.query.filter_by(original_file=task.id).first()
 
         if task.usuario_task != email:
             return {"message": "No tiene acceso a esta publicación"}, 401
 
         if task.status != "Processed":
             return {"message": "El archivo no ha sido procesado"}, 400
+        
 
-        os.remove(f"back/processed_files/{email}/{converted.nombre_archivo}")
+        procesado = task.nombre_archivo.split(".")[0] + "." + task.extension_conversion
+        blob = bucket.blob(f"converted_files/{email}/{procesado}")
+        blob.delete()
+
+        blob2 = bucket.blob(f"original_files/{email}/{task.nombre_archivo}")        
+        blob2.delete()
+
         db.session.delete(task)
         db.session.commit()
-        os.remove(f"back/original_files/{email}/{task.nombre_archivo}")
 
         return "", 204
 
@@ -217,8 +223,6 @@ class RecursoMiTask(Resource):
 """
 Recurso que administra la descarga de un task
 """
-
-
 class RecursoDescargaTask(Resource):
     @jwt_required()
     def get(self, id_task):
@@ -228,16 +232,29 @@ class RecursoDescargaTask(Resource):
         if task.usuario_task != email:
             return {"message": "No tiene acceso a esta publicación"}, 401
         else:
+            
             if task.status == "Processed":
-                procesado = ConvertedFile.query.filter_by(original_file=task.id).first()
+                procesado = task.nombre_archivo.split(".")[0] + "." + task.extension_conversion
+                blob = bucket.blob(f"converted_files/{email}/{procesado}")
+                blob.download_to_filename(f"back/processed_files/{procesado}")
+                @after_this_request
+                def delete(response):
+                    os.remove(f"back/processed_files/{procesado}")
+                    return response
                 return send_file(
-                    f"/back/processed_files/{email}/{procesado.nombre_archivo}",
-                    download_name=procesado.nombre_archivo,
+                   f"processed_files/{procesado}",
+                    download_name=procesado,
                     as_attachment=True,
                 )
             else:
+                blob = bucket.blob(f"original_files/{email}/{task.nombre_archivo}")
+                blob.download_to_filename(f"back/original_files/{task.nombre_archivo}")
+                @after_this_request
+                def delete(response):
+                    os.remove(f"back/original_files/{task.nombre_archivo}")
+                    return response
                 return send_file(
-                    f"/back/original_files/{email}/{task.nombre_archivo}",
+                   f"original_files/{task.nombre_archivo}",
                     download_name=task.nombre_archivo,
                     as_attachment=True,
                 )
