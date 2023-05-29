@@ -123,7 +123,7 @@ Debido a los resultados anteriores decidimos no correr las pruebas con 5000 peti
 - Revisando los logs, encontramos que los fallos se pueden deber a un pequenio delay que existe entre la comunicación de Cloud Storage con el Cloud Function. Al enviar una cantidad tan elevada de peticiones, el sistema no alcanza a escribir el archivo en Storage, cuando el código de la función le pide la ubicación para escribirla en la base de datos este no la encuentra ya que no se encuentra el archivo escrito. Es algo que se debe corregir del cuerpo de la Cloud Function para la siguiente entrega.
 - El sistema se convirtió en algo mas escalable comparado con la anterior entrega, por lo cual se debe tener en consideración las mejoras mencionadas en las anteriores conclusiones con el fin de volver el sistema aun más fiable y escalable.
 
-#Entrega 5
+# Entrega 5
 
 Link video sustentación: https://youtu.be/h8DXYJucWLk
 
