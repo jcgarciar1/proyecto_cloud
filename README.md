@@ -127,3 +127,8 @@ Debido a los resultados anteriores decidimos no correr las pruebas con 5000 peti
 
 Link video sustentación: https://youtu.be/h8DXYJucWLk
 
+### Diagrama de Arquitectura
+
+![image](https://github.com/jcgarciar1/proyecto_cloud/assets/54164818/bb373ed2-7158-464a-a25c-01c200e73260)
+
+
